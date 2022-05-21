@@ -10,49 +10,73 @@ const operate = function(operator, a, b) {
     else return "Not a valid operator"
 };
 
-
 let oper = '';
-let num1 = 0;
+let num1 = '';
 let num2 = '';
+let result = 0;
+let equal = '';
+const numbers = document.querySelectorAll('.number');
+const display = document.querySelector('.display');
+const operators = document.querySelectorAll('.operator');
+const equals = document.querySelector('.equals');
 
-const displayNum = function() {
-    const numbers = document.querySelectorAll('.number');
-    const display = document.querySelector('.display');
-    numbers.forEach(number => number.addEventListener('click', function(e) {
-        const num = `${this.id}`.slice(2);
-        if (display.textContent === '0') {
-            display.textContent = '';
-        };
-        display.textContent += num;
-    }));
-};
-
-const displayNum2 = function() {
-    const numbers = document.querySelectorAll('.number');
-    const display = document.querySelector('.display');
-    numbers.forEach(number => number.addEventListener('click', function(e) {
-        const num = `${this.id}`.slice(2);
+const displayClick = function(e) {
+    e.stopPropagation();
+    const num = `${this.id}`.slice(2);
+    if (!oper) {
+        num1 += num;
+        display.textContent = num1;
+    } else if (equal) {
+        num1 = num;
+        num2 = 0;
+        equal = false;
+        display.textContent = num1;
+    } else if (oper) {
         num2 += num;
         display.textContent = num2;
-        console.log(oper);
-        console.log(num1);
-        console.log(num2);
-    }));
+    }; 
+};
+
+const displayNum = function() {
+    numbers.forEach(number => number.addEventListener('click', displayClick));
 };
 
 const pressOperator = function() {
-    const operators = document.querySelectorAll('.operator');
-    const display = document.querySelector('.display');
     operators.forEach(operator => operator.addEventListener('click', function(e) {
-        oper = `${this.id}`.slice(2);
-        num1 = Number(display.textContent);
-        displayNum2();
+        e.stopPropagation();
+        if (!oper) {
+            oper = `${this.id}`.slice(2);
+            console.log(num1, num2, result);
+        } else if (equal) {
+            num1 = result;
+            equal = false;
+        } else if (oper) {
+            result = operate(oper, Number(num1), Number(num2));
+            display.textContent = result;
+            num1 = result;
+            num2 = '';
+            oper = `${this.id}`.slice(2);
+            console.log(num1, num2, result);
+        }
     }));
 };
+
+const pressEquals = function() {
+    equals.addEventListener('click', function(e) {
+        e.stopPropagation();
+        result = operate(oper, Number(num1), Number(num2));
+        display.textContent = result;
+        num1 = result;
+        num2 = '';
+        equal = true;
+        console.log(equal);
+    })
+}
 
 function NumOpNum() {
     displayNum();
     pressOperator();
+    pressEquals();
 };
 
 NumOpNum();
