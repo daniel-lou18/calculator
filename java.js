@@ -18,26 +18,63 @@ const numbers = document.querySelectorAll('.number');
 const display = document.querySelector('.display');
 const operators = document.querySelectorAll('.operator');
 const equals = document.querySelector('.equals');
+const clear = document.querySelector('.clear');
+
+const longNumber = function() {
+    if ((result.toString()).includes('.') && result < 1000 && result >= 0.00000001) {
+        display.textContent = parseFloat((Number(result).toFixed(8)).toString());
+    } else if ((result.toString()).includes('.') && 1000000 > result && result >= 1000) {
+        display.textContent = parseFloat((Number(result).toFixed(5)).toString());
+    } else if ((result.toString()).includes('.') && 1000000000 > result && result >= 1000000) {
+        display.textContent = parseFloat((Number(result).toFixed(2)).toString());
+    } else if (result >= 1000000000 || result < 0.00000001) {
+        display.textContent = Number(result).toExponential(6);
+    };
+};
 
 const displayClick = function(e) {
     const num = `${this.id}`.slice(2);
     if (nums[2] === false) {
         num1 += num;
-        num1 = num1.replace(/^0[0-9]/, num1.slice(1, 2));
+        num1 = num1.replace(/^(0[0-9])/, num1.slice(1, 2));
+        if (num1.length > 11) {
+            num1 = num1.slice(0,11);
+        } else if (num1 === '.') {
+            num1 = '0.';
+        } else if (num1.match(/\..+?\./g)) {
+            num1 = 'IP address? LOL';
+            pressClear();
+        };
         display.textContent = num1;
-    } else if(nums[2] === true && nums[4] === true) {
+    } else if (nums[2] === true && nums[4] === true) {
         num1 = '';
         num2 = '';
         nums[2] = false;
         nums[4] = false;
         num1 += num;
         num1 = num1.replace(/^0[0-9]/, num1.slice(1, 2));
+        if (num1.length > 11) {
+            num1 = num1.slice(0,11);
+        } else if (num1 === '.') {
+            num1 = '0.';
+        } else if (num1.match(/\..+?\./g)) {
+            num1 = 'IP address? LOL';
+            pressClear();
+        };
         display.textContent = num1;
     } else if (nums[2] === true) {
         num2 += num;
         num2 = num2.replace(/^0[0-9]/, num2.slice(1, 2));
+        if (num2.length > 11) {
+            num2 = num2.slice(0,11);
+        } else if (num2 === '.') {
+            num2 = '0.';
+        } else if (num2.match(/\..+?\./g)) {
+            num2 = 'IP address? LOL';
+            pressClear();
+        };
         display.textContent = num2;
-    }; 
+    };
 };
 
 const displayNum = function() {
@@ -54,7 +91,10 @@ const pressOperator = function() {
             num2 = nums[0];
             nums[1] = num2;
             result = operate(nums[3], Number(nums[0]), Number(nums[1]));
-            display.textContent = result;
+            display.textContent = parseFloat(result);
+            if (result.toString().length > 11) {
+                longNumber();
+            };
             nums[0] = result;
             num2 = '';
             nums[3] = `${this.id}`.slice(2);
@@ -66,7 +106,10 @@ const pressOperator = function() {
         } else if (nums[2] === true) {
             nums[1] = num2;
             result = operate(nums[3], Number(nums[0]), Number(nums[1]));
-            display.textContent = result;
+            display.textContent = parseFloat(result);
+            if (result.toString().length > 11) {
+                longNumber();
+            };
             nums[0] = result;
             num2 = '';
             nums[3] = `${this.id}`.slice(2);
@@ -83,17 +126,36 @@ const pressEquals = function() {
         } else {
             nums[1] = num2;
             result = operate(nums[3], Number(nums[0]), Number(nums[1]));
-            display.textContent = result;
+            display.textContent = parseFloat(result);
+            if (result.toString().length > 11) {
+                longNumber();
+            };
             num2 = '';
             nums[4] = true;
         };
     });
-}
+};
+
+const pressClear = function() {
+    clear.addEventListener('click', function(e) {
+        num1 = '';
+        num2 = '';
+        result = 0;
+        nums[0] = num1;
+        nums[1] = num2;
+        nums[2] = false;
+        nums[3] = '';
+        nums[4] = 'false';
+        display.textContent = '0';
+    });
+};
+
 
 function NumOpNum() {
     displayNum();
     pressOperator();
     pressEquals();
+    pressClear();
 };
 
 NumOpNum();
